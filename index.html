@@ -10,86 +10,115 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <!-- Custom CSS (Industrial Safety Theme & Glassmorphism) -->
+    <!-- Custom CSS (Minimalist Mobile First) -->
     <style>
         :root {
-            --safety-green: #198754;
-            --safety-blue: #0d6efd;
-            --glass-bg-dark: rgba(33, 37, 41, 0.7);
-            --glass-bg-light: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.125);
+            --primary-color: #10b981; /* Minimalist Emerald Green */
+            --primary-hover: #059669;
+            --bg-dark: #121212;
+            --bg-light: #f8f9fa;
+            --card-dark: #1e1e1e;
+            --card-light: #ffffff;
+            --text-dark: #f3f4f6;
+            --text-light: #1f2937;
         }
 
         body {
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
+            padding-bottom: 80px; /* Space for bottom nav */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
-        /* Background Gradients */
-        [data-bs-theme="dark"] body {
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            background-attachment: fixed;
-        }
-        [data-bs-theme="light"] body {
-            background: linear-gradient(135deg, #e0eafc, #cfdef3);
-            background-attachment: fixed;
-        }
+        /* Themes */
+        [data-bs-theme="dark"] body { background-color: var(--bg-dark); color: var(--text-dark); }
+        [data-bs-theme="light"] body { background-color: var(--bg-light); color: var(--text-light); }
 
-        /* Glassmorphism Cards */
-        .glass-card {
+        /* Minimal Cards */
+        .minimal-card {
+            border-radius: 1.25rem;
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: background-color 0.3s;
+        }
+        [data-bs-theme="dark"] .minimal-card { background-color: var(--card-dark); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); }
+        [data-bs-theme="light"] .minimal-card { background-color: var(--card-light); }
+
+        /* Form Inputs Customization */
+        .form-control, .form-select {
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(128,128,128,0.2);
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            border-color: var(--primary-color);
+        }
+        .input-group-text { border-radius: 0.75rem 0 0 0.75rem; border: 1px solid rgba(128,128,128,0.2); }
+        
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem;
+            font-weight: 600;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .btn-primary-custom:hover, .btn-primary-custom:active { background-color: var(--primary-hover); color: white; }
+        .btn-primary-custom:active { transform: scale(0.98); }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0 1.2rem 0; /* Extra padding bottom for safe area on iPhones */
+            z-index: 1050;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, background-color 0.3s;
         }
+        [data-bs-theme="dark"] .bottom-nav { background-color: rgba(30, 30, 30, 0.9); border-top: 1px solid #333; }
+        [data-bs-theme="light"] .bottom-nav { background-color: rgba(255, 255, 255, 0.9); border-top: 1px solid #eee; }
 
-        [data-bs-theme="dark"] .glass-card {
-            background-color: var(--glass-bg-dark);
-            color: #fff;
-        }
-
-        [data-bs-theme="light"] .glass-card {
-            background-color: var(--glass-bg-light);
-            color: #212529;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Custom Colors */
-        .text-safety-green { color: #20c997 !important; }
-        .text-safety-blue { color: #6ea8fe !important; }
-        [data-bs-theme="light"] .text-safety-green { color: var(--safety-green) !important; }
-        [data-bs-theme="light"] .text-safety-blue { color: var(--safety-blue) !important; }
-
-        /* Loading Spinner Overlay */
-        #loading-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
+        .nav-item {
+            text-align: center;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            color: white;
+            align-items: center;
+            text-decoration: none;
+        }
+        .nav-item i { font-size: 1.5rem; margin-bottom: 2px; transition: transform 0.2s; }
+        .nav-item span { font-size: 0.7rem; font-weight: 500; }
+        
+        .nav-item.active { color: var(--primary-color); }
+        .nav-item.active i { transform: translateY(-3px); }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column; color: white;
         }
 
-        /* Table responsiveness */
-        .table-responsive {
-            border-radius: 0.5rem;
-            overflow: hidden;
+        /* Hide elements gracefully */
+        .view-section {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Toast positioning */
-        .toast-container {
-            z-index: 1055;
-        }
+        /* Top Bar Minimal */
+        .top-bar { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
     </style>
 
     <!-- Supabase JS -->
@@ -101,194 +130,200 @@
 
     <!-- Loading Overlay -->
     <div id="loading-overlay">
-        <div class="spinner-border text-success" style="width: 3rem; height: 3rem;" role="status"></div>
-        <h4 class="mt-3">กำลังโหลดข้อมูล...</h4>
+        <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-color);" role="status"></div>
+        <h5 class="mt-3 fw-light">กำลังโหลดข้อมูล...</h5>
     </div>
 
-    <!-- Navbar / Header -->
-    <nav class="navbar navbar-expand-lg glass-card rounded-0 mb-4 sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <i class="bi bi-heptagon-half text-safety-green fs-2 me-2"></i>
-                <span class="fw-bold fs-4">Chemical Storage Survey</span>
-            </a>
-            <div class="d-flex align-items-center gap-3">
-                <span id="current-date" class="d-none d-md-inline fw-semibold text-muted"></span>
-                <button class="btn btn-outline-secondary rounded-circle" id="theme-toggle" title="Toggle Theme">
-                    <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
-                </button>
-            </div>
+    <!-- Minimal Header -->
+    <header class="top-bar">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-heptagon-fill fs-3 me-2" style="color: var(--primary-color);"></i>
+            <h5 class="fw-bold mb-0">Chemical Survey</h5>
         </div>
-    </nav>
+        <button class="btn btn-sm btn-outline-secondary rounded-circle border-0" id="theme-toggle" style="width: 40px; height: 40px;">
+            <i class="bi bi-moon-stars-fill fs-5" id="theme-icon"></i>
+        </button>
+    </header>
 
-    <div class="container-fluid px-4 pb-5">
+    <div class="container-fluid px-3 pb-4">
         
-        <!-- ROW 1: Dashboard Summary Cards -->
-        <div class="row g-4 mb-4">
-            <div class="col-12 col-md-4">
-                <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100 border-start border-4 border-primary">
-                    <div>
-                        <h6 class="text-muted text-uppercase fw-bold mb-1">จำนวน Factory ทั้งหมด</h6>
-                        <h2 class="mb-0 fw-bold text-safety-blue" id="summary-factories">0</h2>
+        <!-- ============================================== -->
+        <!-- VIEW 1: DATA ENTRY FORM (Main Default View)    -->
+        <!-- ============================================== -->
+        <div id="view-form" class="view-section">
+            <div class="minimal-card p-4 mx-auto" style="max-width: 600px; margin-top: 20px;">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex justify-content-center align-items-center rounded-circle mb-3" style="width: 60px; height: 60px; background-color: rgba(16, 185, 129, 0.1);">
+                        <i class="bi bi-pencil-square fs-2" style="color: var(--primary-color);"></i>
                     </div>
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                        <i class="bi bi-building text-primary fs-1"></i>
-                    </div>
+                    <h4 class="fw-bold" id="form-title">บันทึกจุดเก็บสารเคมี</h4>
+                    <p class="text-muted small">กรุณากรอกข้อมูลเพื่อบันทึกการสำรวจ</p>
+                    <span class="badge bg-warning text-dark d-none px-3 py-2 rounded-pill" id="edit-badge">โหมดแก้ไขข้อมูล</span>
                 </div>
+
+                <form id="survey-form">
+                    <input type="hidden" id="record-id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">โรงงาน (Factory)</label>
+                        <select class="form-select form-select-lg" id="input-factory" required>
+                            <option value="">-- เลือก Factory --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">ไลน์การผลิต (Line)</label>
+                        <select class="form-select form-select-lg" id="input-line" required disabled>
+                            <option value="">-- กรุณาเลือก Factory ก่อน --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-semibold">จำนวนจุดเก็บสารเคมี</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-123 text-muted"></i></span>
+                            <input type="number" class="form-control" id="input-points" min="0" required placeholder="เช่น 5">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-semibold">จุดที่ตั้ง (Location)</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-transparent"><i class="bi bi-geo-alt text-muted"></i></span>
+                            <input type="text" class="form-control" id="input-location" required placeholder="เช่น ตู้ A, มุมเสา B">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary-custom" id="btn-save">
+                            บันทึกข้อมูล
+                        </button>
+                        <button type="button" class="btn btn-light rounded-pill fw-semibold text-muted py-2" id="btn-clear" style="border: 1px solid rgba(128,128,128,0.2);">
+                            ล้างข้อมูล
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="col-12 col-md-4">
-                <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100 border-start border-4 border-info">
-                    <div>
-                        <h6 class="text-muted text-uppercase fw-bold mb-1">จำนวน Line ทั้งหมด</h6>
-                        <h2 class="mb-0 fw-bold text-info" id="summary-lines">0</h2>
-                    </div>
-                    <div class="bg-info bg-opacity-10 p-3 rounded-circle">
-                        <i class="bi bi-diagram-3 text-info fs-1"></i>
-                    </div>
+        </div>
+
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: DATA TABLE                             -->
+        <!-- ============================================== -->
+        <div id="view-table" class="view-section d-none">
+            <div class="minimal-card p-3 p-md-4 mx-auto" style="max-width: 1000px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-table me-2" style="color: var(--primary-color);"></i>รายการข้อมูล</h5>
                 </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="glass-card p-4 d-flex align-items-center justify-content-between h-100 border-start border-4 border-success">
-                    <div>
-                        <h6 class="text-muted text-uppercase fw-bold mb-1">จุดเก็บสารเคมีรวม</h6>
-                        <h2 class="mb-0 fw-bold text-safety-green" id="summary-points">0</h2>
+                
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" class="form-control" id="search-box" placeholder="ค้นหา Line, Location...">
                     </div>
-                    <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                        <i class="bi bi-droplet text-success fs-1"></i>
-                    </div>
+                    <select class="form-select" id="filter-factory">
+                        <option value="ALL">ทุก Factory</option>
+                    </select>
+                </div>
+
+                <div class="table-responsive rounded-3 border">
+                    <table class="table table-hover align-middle mb-0" id="data-table">
+                        <thead class="table-light text-nowrap">
+                            <tr>
+                                <th>Factory</th>
+                                <th>Line</th>
+                                <th class="text-center">จำนวน</th>
+                                <th>Location</th>
+                                <th class="text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <tr><td colspan="5" class="text-center py-5 text-muted">ไม่มีข้อมูล</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <!-- ROW 2: Charts -->
-        <div class="row g-4 mb-4">
-            <div class="col-12 col-lg-8">
-                <div class="glass-card p-4 h-100">
-                    <h5 class="mb-3"><i class="bi bi-bar-chart-line me-2"></i>จำนวนจุดเก็บสารเคมีแยกตาม Factory</h5>
-                    <div style="height: 300px; position: relative;">
-                        <canvas id="barChart"></canvas>
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: DASHBOARD (Summary & Charts)           -->
+        <!-- ============================================== -->
+        <div id="view-dashboard" class="view-section d-none">
+            <div class="mx-auto" style="max-width: 1000px;">
+                
+                <!-- Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="minimal-card p-3 text-center h-100">
+                            <i class="bi bi-building fs-3 text-primary mb-2 d-block"></i>
+                            <h2 class="fw-bold mb-0" id="summary-factories">0</h2>
+                            <span class="text-muted small">Factory</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="minimal-card p-3 text-center h-100">
+                            <i class="bi bi-diagram-3 fs-3 text-info mb-2 d-block"></i>
+                            <h2 class="fw-bold mb-0" id="summary-lines">0</h2>
+                            <span class="text-muted small">Line</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="minimal-card p-4 text-center" style="background: linear-gradient(135deg, var(--primary-color), #047857); color: white;">
+                            <i class="bi bi-droplet-fill fs-2 mb-2 d-block opacity-75"></i>
+                            <h1 class="fw-bold mb-0 display-4" id="summary-points">0</h1>
+                            <span class="opacity-75">จุดเก็บสารเคมีรวมทั้งหมด</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-lg-4">
-                <div class="glass-card p-4 h-100">
-                    <h5 class="mb-3"><i class="bi bi-pie-chart me-2"></i>สัดส่วนจุดเก็บ (Factory)</h5>
-                    <div style="height: 300px; position: relative;">
-                        <canvas id="pieChart"></canvas>
+
+                <!-- Charts -->
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="minimal-card p-3 p-md-4">
+                            <h6 class="fw-bold mb-3 text-muted">จำนวนแยกตาม Factory</h6>
+                            <div style="height: 250px; position: relative;">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="minimal-card p-3 p-md-4">
+                            <h6 class="fw-bold mb-3 text-muted">สัดส่วนจุดเก็บ</h6>
+                            <div style="height: 250px; position: relative;">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- ROW 3: Form & Data Table -->
-        <div class="row g-4">
-            
-            <!-- FORM CARD -->
-            <div class="col-12 col-xl-4">
-                <div class="glass-card p-4 sticky-top" style="top: 100px; z-index: 1;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0 fw-bold" id="form-title"><i class="bi bi-journal-plus me-2 text-safety-green"></i>บันทึกข้อมูล</h4>
-                        <span class="badge bg-primary d-none" id="edit-badge">โหมดแก้ไข</span>
-                    </div>
+    </div>
 
-                    <form id="survey-form">
-                        <input type="hidden" id="record-id"> <!-- สำหรับเก็บ ID ตอนแก้ไข -->
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Factory <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-lg" id="input-factory" required>
-                                <option value="">-- เลือก Factory --</option>
-                                <!-- Populate via JS -->
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Line <span class="text-danger">*</span></label>
-                            <select class="form-select form-select-lg" id="input-line" required disabled>
-                                <option value="">-- กรุณาเลือก Factory ก่อน --</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">จำนวนจุดเก็บสารเคมี <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-123"></i></span>
-                                <input type="number" class="form-control" id="input-points" min="0" required placeholder="เช่น 5">
-                            </div>
-                            <div class="invalid-feedback">ต้องเป็นตัวเลข 0 ขึ้นไป</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">จุดที่ตั้ง (Location) <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                <input type="text" class="form-control" id="input-location" required placeholder="เช่น ตู้ A, มุมเสา B">
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg fw-bold py-3" id="btn-save">
-                                <i class="bi bi-save me-2"></i>บันทึกข้อมูล
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-lg" id="btn-clear">
-                                <i class="bi bi-eraser me-2"></i>ล้างข้อมูล
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- DATA TABLE CARD -->
-            <div class="col-12 col-xl-8">
-                <div class="glass-card p-4">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-table me-2 text-safety-blue"></i>ตารางข้อมูลสำรวจ</h4>
-                        
-                        <!-- Filters -->
-                        <div class="d-flex flex-column flex-md-row gap-2 w-100 w-md-auto" style="max-width: 500px;">
-                            <select class="form-select form-select-lg w-100 w-md-auto" id="filter-factory">
-                                <option value="ALL">All Factories</option>
-                                <!-- Populate via JS -->
-                            </select>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" class="form-control" id="search-box" placeholder="ค้นหา Line, Location...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" id="data-table">
-                            <thead class="table-dark text-nowrap">
-                                <tr>
-                                    <th>Factory</th>
-                                    <th>Line</th>
-                                    <th class="text-center">จำนวน</th>
-                                    <th>Location</th>
-                                    <th>วันที่บันทึก</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body">
-                                <!-- Data injected via JS -->
-                                <tr><td colspan="6" class="text-center py-4">ไม่มีข้อมูล</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="nav-item active" id="nav-form" onclick="switchView('form')">
+            <i class="bi bi-pencil-square"></i>
+            <span>บันทึก</span>
+        </div>
+        <div class="nav-item" id="nav-table" onclick="switchView('table')">
+            <i class="bi bi-card-list"></i>
+            <span>รายการ</span>
+        </div>
+        <div class="nav-item" id="nav-dashboard" onclick="switchView('dashboard')">
+            <i class="bi bi-pie-chart-fill"></i>
+            <span>สถิติ</span>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body fw-bold" id="toast-message">
-                    <i class="bi bi-check-circle me-2"></i>บันทึกข้อมูลสำเร็จ!
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <div class="toast-body fw-bold" id="toast-message"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
@@ -296,10 +331,9 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- MAIN APPLICATION SCRIPT -->
     <script>
         // ==========================================
-        // 1. CONFIGURATION (ใส่ URL และ KEY ของคุณที่นี่)
+        // 1. CONFIGURATION
         // ==========================================
         const SUPABASE_URL = "https://shyjmfpjzadoaftcqakb.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoeWptZnBqemFkb2FmdGNxYWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0OTM3OTksImV4cCI6MjA5NzA2OTc5OX0.NEXqnCUkYOwMwAY4opsRT1GumXkXq5FvWYEH5hoZrBE";
@@ -323,17 +357,14 @@
         let barChartInstance = null;
         let pieChartInstance = null;
         let isEditing = false;
+        let currentView = 'form';
 
         document.addEventListener("DOMContentLoaded", () => {
             initSystem();
         });
 
         function initSystem() {
-            // Set Current Date
-            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('th-TH', dateOptions);
-
-            // Init Theme Toggle
+            // Init Theme
             const themeToggleBtn = document.getElementById('theme-toggle');
             const themeIcon = document.getElementById('theme-icon');
             const htmlTag = document.documentElement;
@@ -343,39 +374,62 @@
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 htmlTag.setAttribute('data-bs-theme', newTheme);
                 themeIcon.className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-brightness-high-fill';
-                renderCharts(); // Re-render charts to match theme colors
+                
+                // Set chart font colors dynamically
+                Chart.defaults.color = newTheme === 'dark' ? '#f3f4f6' : '#1f2937';
+                if(currentView === 'dashboard') renderCharts(); 
             });
 
-            // Populate Dropdowns
             populateFactoryDropdowns();
 
-            // Event Listeners for Form
+            // Event Listeners
             document.getElementById('input-factory').addEventListener('change', handleFactoryChange);
             document.getElementById('survey-form').addEventListener('submit', handleFormSubmit);
             document.getElementById('btn-clear').addEventListener('click', resetForm);
-
-            // Event Listeners for Filters
             document.getElementById('filter-factory').addEventListener('change', renderTable);
             document.getElementById('search-box').addEventListener('input', renderTable);
 
-            // Init Supabase if keys are provided
-            if (SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY") {
+            // Init Supabase
+            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 fetchData();
-            } else {
-                showToast("กรุณาใส่ Supabase URL และ KEY ในโค้ดก่อนใช้งาน", "danger");
             }
         }
 
         // ==========================================
-        // 4. UI FUNCTIONS (Dropdowns, Toasts, Loaders)
+        // NAVIGATION SYSTEM (Switching Views)
+        // ==========================================
+        function switchView(viewName) {
+            currentView = viewName;
+            
+            // Hide all views
+            document.getElementById('view-form').classList.add('d-none');
+            document.getElementById('view-table').classList.add('d-none');
+            document.getElementById('view-dashboard').classList.add('d-none');
+            
+            // Remove active class from navs
+            document.getElementById('nav-form').classList.remove('active');
+            document.getElementById('nav-table').classList.remove('active');
+            document.getElementById('nav-dashboard').classList.remove('active');
+
+            // Show selected view & set active
+            document.getElementById(`view-${viewName}`).classList.remove('d-none');
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            // Specific actions on view change
+            window.scrollTo(0, 0);
+            if(viewName === 'dashboard') {
+                renderCharts(); // Re-render to fix sizing issues when hidden
+            }
+        }
+
+        // ==========================================
+        // UI & HELPERS
         // ==========================================
         function populateFactoryDropdowns() {
             const inputFactory = document.getElementById('input-factory');
             const filterFactory = document.getElementById('filter-factory');
-            
-            const factories = Object.keys(masterData);
-            factories.forEach(factory => {
+            Object.keys(masterData).forEach(factory => {
                 inputFactory.add(new Option(factory, factory));
                 filterFactory.add(new Option(factory, factory));
             });
@@ -384,13 +438,9 @@
         function handleFactoryChange(e) {
             const lineSelect = document.getElementById('input-line');
             const selectedFactory = e.target.value;
-
             lineSelect.innerHTML = '<option value="">-- เลือก Line --</option>';
-            
             if (selectedFactory && masterData[selectedFactory]) {
-                masterData[selectedFactory].forEach(line => {
-                    lineSelect.add(new Option(line, line));
-                });
+                masterData[selectedFactory].forEach(line => lineSelect.add(new Option(line, line)));
                 lineSelect.disabled = false;
             } else {
                 lineSelect.innerHTML = '<option value="">-- กรุณาเลือก Factory ก่อน --</option>';
@@ -406,11 +456,18 @@
             const toastEl = document.getElementById('liveToast');
             const toastBody = document.getElementById('toast-message');
             
-            toastEl.className = `toast align-items-center text-bg-${type} border-0`;
-            toastBody.innerHTML = `<i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>${message}`;
+            // Customize colors based on type
+            if(type === 'success') {
+                toastEl.style.backgroundColor = 'var(--primary-color)';
+                toastEl.style.color = 'white';
+                toastBody.innerHTML = `<i class="bi bi-check-circle-fill me-2"></i>${message}`;
+            } else {
+                toastEl.style.backgroundColor = '#ef4444'; // red
+                toastEl.style.color = 'white';
+                toastBody.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i>${message}`;
+            }
             
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
+            new bootstrap.Toast(toastEl, { delay: 3000 }).show();
         }
 
         function resetForm() {
@@ -418,21 +475,19 @@
             document.getElementById('input-line').disabled = true;
             document.getElementById('input-line').innerHTML = '<option value="">-- กรุณาเลือก Factory ก่อน --</option>';
             
-            // Reset Edit Mode
             isEditing = false;
             document.getElementById('record-id').value = '';
             document.getElementById('edit-badge').classList.add('d-none');
-            document.getElementById('btn-save').innerHTML = '<i class="bi bi-save me-2"></i>บันทึกข้อมูล';
-            document.getElementById('btn-save').classList.replace('btn-warning', 'btn-success');
-            document.getElementById('form-title').innerHTML = '<i class="bi bi-journal-plus me-2 text-safety-green"></i>บันทึกข้อมูล';
+            document.getElementById('btn-save').innerHTML = 'บันทึกข้อมูล';
+            document.getElementById('btn-save').classList.replace('btn-warning', 'btn-primary-custom');
+            document.getElementById('form-title').innerText = 'บันทึกจุดเก็บสารเคมี';
         }
 
         // ==========================================
-        // 5. SUPABASE CRUD OPERATIONS
+        // SUPABASE CRUD
         // ==========================================
         async function fetchData() {
             if(!supabaseClient) return;
-            showLoading(true);
             try {
                 const { data, error } = await supabaseClient
                     .from('chemical_storage_survey')
@@ -440,27 +495,18 @@
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
-
                 globalData = data;
                 updateDashboardSummary();
-                renderCharts();
                 renderTable();
+                if(currentView === 'dashboard') renderCharts();
             } catch (error) {
-                console.error("Error fetching data:", error);
-                showToast("ไม่สามารถดึงข้อมูลได้: " + error.message, "danger");
-            } finally {
-                showLoading(false);
+                console.error(error);
+                showToast("ไม่สามารถดึงข้อมูลได้", "danger");
             }
         }
 
         async function handleFormSubmit(e) {
             e.preventDefault();
-            if(!supabaseClient) {
-                showToast("กรุณาตั้งค่า Supabase ก่อน", "danger");
-                return;
-            }
-
-            // Get Form Data
             const id = document.getElementById('record-id').value;
             const payload = {
                 factory: document.getElementById('input-factory').value,
@@ -469,56 +515,37 @@
                 location: document.getElementById('input-location').value
             };
 
-            // Validation
-            if (payload.storage_point < 0) {
-                showToast("จำนวนจุดเก็บสารเคมีต้องไม่ติดลบ", "warning");
-                return;
-            }
-
             showLoading(true);
             try {
                 if (isEditing && id) {
-                    // Update
-                    const { error } = await supabaseClient
-                        .from('chemical_storage_survey')
-                        .update(payload)
-                        .eq('id', id);
+                    const { error } = await supabaseClient.from('chemical_storage_survey').update(payload).eq('id', id);
                     if (error) throw error;
                     showToast("อัปเดตข้อมูลสำเร็จ!");
+                    switchView('table'); // Go back to table after edit
                 } else {
-                    // Insert
-                    const { error } = await supabaseClient
-                        .from('chemical_storage_survey')
-                        .insert([payload]);
+                    const { error } = await supabaseClient.from('chemical_storage_survey').insert([payload]);
                     if (error) throw error;
                     showToast("บันทึกข้อมูลสำเร็จ!");
                 }
-                
                 resetForm();
-                fetchData(); // Refresh data
+                fetchData();
             } catch (error) {
-                console.error("Error saving data:", error);
-                showToast("เกิดข้อผิดพลาดในการบันทึก: " + error.message, "danger");
+                showToast("เกิดข้อผิดพลาด: " + error.message, "danger");
             } finally {
                 showLoading(false);
             }
         }
 
         async function deleteRecord(id) {
-            if(confirm("คุณแน่ใจหรือไม่ที่จะลบข้อมูลนี้? การกระทำนี้ไม่สามารถย้อนกลับได้")) {
+            if(confirm("ยืนยันการลบข้อมูลนี้?")) {
                 showLoading(true);
                 try {
-                    const { error } = await supabaseClient
-                        .from('chemical_storage_survey')
-                        .delete()
-                        .eq('id', id);
-                    
+                    const { error } = await supabaseClient.from('chemical_storage_survey').delete().eq('id', id);
                     if (error) throw error;
                     showToast("ลบข้อมูลสำเร็จ");
                     fetchData();
                 } catch (error) {
-                    console.error("Error deleting data:", error);
-                    showToast("เกิดข้อผิดพลาดในการลบ: " + error.message, "danger");
+                    showToast("ลบข้อมูลไม่สำเร็จ", "danger");
                 } finally {
                     showLoading(false);
                 }
@@ -529,64 +556,36 @@
             const record = globalData.find(item => item.id == id);
             if (!record) return;
 
+            switchView('form'); // Switch to form view
             isEditing = true;
             document.getElementById('record-id').value = record.id;
             
-            // Populate Factory
             const factorySelect = document.getElementById('input-factory');
             factorySelect.value = record.factory;
-            
-            // Trigger change to populate Lines
             factorySelect.dispatchEvent(new Event('change'));
             
-            // Populate Line
-            setTimeout(() => {
-                document.getElementById('input-line').value = record.line_name;
-            }, 50);
+            setTimeout(() => { document.getElementById('input-line').value = record.line_name; }, 50);
 
-            // Populate remaining fields
             document.getElementById('input-points').value = record.storage_point;
             document.getElementById('input-location').value = record.location || '';
 
-            // Update UI for Edit Mode
             document.getElementById('edit-badge').classList.remove('d-none');
             document.getElementById('btn-save').innerHTML = '<i class="bi bi-pencil-square me-2"></i>อัปเดตข้อมูล';
-            document.getElementById('btn-save').classList.replace('btn-success', 'btn-warning');
-            document.getElementById('form-title').innerHTML = '<i class="bi bi-pencil-square me-2 text-warning"></i>แก้ไขข้อมูล';
-            
-            // Scroll to form
-            document.getElementById('survey-form').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('btn-save').classList.replace('btn-primary-custom', 'btn-warning');
+            document.getElementById('form-title').innerText = 'แก้ไขข้อมูล';
         }
 
         // ==========================================
-        // 6. DASHBOARD & DATA RENDERING
+        // DATA RENDERING
         // ==========================================
         function updateDashboardSummary() {
             const uniqueFactories = new Set(globalData.map(item => item.factory)).size;
             const uniqueLines = new Set(globalData.map(item => item.line_name)).size;
             const totalPoints = globalData.reduce((sum, item) => sum + item.storage_point, 0);
 
-            // Animate Numbers (Simple incrementing effect)
-            animateValue("summary-factories", 0, uniqueFactories, 500);
-            animateValue("summary-lines", 0, uniqueLines, 500);
-            animateValue("summary-points", 0, totalPoints, 500);
-        }
-
-        function animateValue(id, start, end, duration) {
-            if (start === end) {
-                document.getElementById(id).textContent = end;
-                return;
-            }
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                document.getElementById(id).textContent = Math.floor(progress * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                }
-            };
-            window.requestAnimationFrame(step);
+            document.getElementById("summary-factories").textContent = uniqueFactories;
+            document.getElementById("summary-lines").textContent = uniqueLines;
+            document.getElementById("summary-points").textContent = totalPoints;
         }
 
         function renderTable() {
@@ -595,11 +594,7 @@
             const searchText = document.getElementById('search-box').value.toLowerCase();
 
             let filteredData = globalData;
-
-            // Apply Filters
-            if (filterFact !== 'ALL') {
-                filteredData = filteredData.filter(item => item.factory === filterFact);
-            }
+            if (filterFact !== 'ALL') filteredData = filteredData.filter(item => item.factory === filterFact);
             if (searchText) {
                 filteredData = filteredData.filter(item => 
                     item.line_name.toLowerCase().includes(searchText) || 
@@ -607,26 +602,20 @@
                 );
             }
 
-            // Render Rows
             if (filteredData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">ไม่พบข้อมูล</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-muted">ไม่พบข้อมูล</td></tr>';
                 return;
             }
 
             tbody.innerHTML = filteredData.map(item => `
                 <tr>
-                    <td class="fw-semibold">${item.factory}</td>
-                    <td>${item.line_name}</td>
-                    <td class="text-center h5 mb-0"><span class="badge bg-success bg-opacity-75">${item.storage_point}</span></td>
-                    <td><i class="bi bi-geo-alt-fill text-danger me-1"></i>${item.location || '-'}</td>
-                    <td class="small text-muted text-nowrap">${new Date(item.created_at).toLocaleString('th-TH')}</td>
+                    <td class="fw-semibold text-muted">${item.factory}</td>
+                    <td class="fw-bold">${item.line_name}</td>
+                    <td class="text-center"><span class="badge rounded-pill" style="background-color: rgba(16, 185, 129, 0.2); color: var(--primary-color); font-size: 0.9rem;">${item.storage_point}</span></td>
+                    <td class="small"><i class="bi bi-geo-alt text-muted me-1"></i>${item.location || '-'}</td>
                     <td class="text-center text-nowrap">
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editRecord(${item.id})" title="แก้ไข">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(${item.id})" title="ลบ">
-                            <i class="bi bi-trash"></i>
-                        </button>
+                        <button class="btn btn-sm btn-light text-primary me-1 rounded-circle" style="width: 32px; height: 32px;" onclick="editRecord(${item.id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-light text-danger rounded-circle" style="width: 32px; height: 32px;" onclick="deleteRecord(${item.id})"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -635,91 +624,61 @@
         function renderCharts() {
             if (globalData.length === 0) return;
 
-            // Prepare Data: Group points by Factory
             const factoryData = {};
             globalData.forEach(item => {
-                if(factoryData[item.factory]) {
-                    factoryData[item.factory] += item.storage_point;
-                } else {
-                    factoryData[item.factory] = item.storage_point;
-                }
+                factoryData[item.factory] = (factoryData[item.factory] || 0) + item.storage_point;
             });
 
             const labels = Object.keys(factoryData);
             const dataValues = Object.values(factoryData);
 
-            // Theme Settings
             const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-            const textColor = isDark ? '#e9ecef' : '#495057';
-            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+            Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-            Chart.defaults.color = textColor;
-            Chart.defaults.font.family = "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
+            // Modern color palette
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
 
-            // Colors for charts
-            const bgColors = [
-                'rgba(25, 135, 84, 0.7)',  // Success
-                'rgba(13, 110, 253, 0.7)', // Primary
-                'rgba(255, 193, 7, 0.7)',  // Warning
-                'rgba(220, 53, 69, 0.7)',  // Danger
-                'rgba(13, 202, 240, 0.7)'  // Info
-            ];
-            const borderColors = bgColors.map(color => color.replace('0.7', '1'));
-
-            // 1. Bar Chart
-            const ctxBar = document.getElementById('barChart').getContext('2d');
+            // Bar Chart
             if (barChartInstance) barChartInstance.destroy();
-            
-            barChartInstance = new Chart(ctxBar, {
+            barChartInstance = new Chart(document.getElementById('barChart').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'จำนวนจุดเก็บสารเคมี',
                         data: dataValues,
-                        backgroundColor: bgColors,
-                        borderColor: borderColors,
-                        borderWidth: 1,
-                        borderRadius: 6
+                        backgroundColor: colors.map(c => c + 'CC'), // 80% opacity
+                        borderRadius: 6,
+                        borderSkipped: false
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: gridColor },
-                            ticks: { precision: 0 }
-                        },
-                        x: { grid: { display: false } }
+                        y: { beginAtZero: true, grid: { color: gridColor }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
                     }
                 }
             });
 
-            // 2. Pie Chart
-            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            // Pie Chart
             if (pieChartInstance) pieChartInstance.destroy();
-
-            pieChartInstance = new Chart(ctxPie, {
+            pieChartInstance = new Chart(document.getElementById('pieChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
                         data: dataValues,
-                        backgroundColor: bgColors,
-                        borderColor: isDark ? '#212529' : '#fff',
-                        borderWidth: 2
+                        backgroundColor: colors,
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'right' }
-                    },
-                    cutout: '60%'
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }
                 }
             });
         }
