@@ -125,6 +125,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS (Excel Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -214,6 +216,9 @@
             <div class="minimal-card p-3 p-md-4 mx-auto" style="max-width: 1000px;">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold mb-0"><i class="bi bi-table me-2" style="color: var(--primary-color);"></i>รายการข้อมูล</h5>
+                    <button class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="exportToExcel()">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+                    </button>
                 </div>
                 
                 <div class="d-flex flex-column gap-2 mb-3">
@@ -576,7 +581,7 @@
         }
 
         // ==========================================
-        // DATA RENDERING
+        // DATA RENDERING & EXPORT
         // ==========================================
         function updateDashboardSummary() {
             const uniqueFactories = new Set(globalData.map(item => item.factory)).size;
@@ -619,6 +624,54 @@
                     </td>
                 </tr>
             `).join('');
+        }
+        
+        // ฟังก์ชัน Export to Excel
+        function exportToExcel() {
+            if (globalData.length === 0) {
+                showToast("ไม่มีข้อมูลสำหรับ Export", "danger");
+                return;
+            }
+
+            // นำเงื่อนไข Filter และ Search มาใช้เพื่อให้ Export เฉพาะข้อมูลที่กำลังแสดงอยู่
+            const filterFact = document.getElementById('filter-factory').value;
+            const searchText = document.getElementById('search-box').value.toLowerCase();
+
+            let exportData = globalData;
+            if (filterFact !== 'ALL') exportData = exportData.filter(item => item.factory === filterFact);
+            if (searchText) {
+                exportData = exportData.filter(item => 
+                    item.line_name.toLowerCase().includes(searchText) || 
+                    (item.location && item.location.toLowerCase().includes(searchText))
+                );
+            }
+
+            if (exportData.length === 0) {
+                showToast("ไม่พบข้อมูลที่ตรงกับเงื่อนไข", "danger");
+                return;
+            }
+
+            // จัดรูปแบบข้อมูลสำหรับ Excel
+            const formattedData = exportData.map(item => ({
+                "โรงงาน (Factory)": item.factory,
+                "ไลน์ (Line)": item.line_name,
+                "จำนวนจุดเก็บ": item.storage_point,
+                "จุดที่ตั้ง (Location)": item.location || '-',
+                "วันที่บันทึก": new Date(item.created_at).toLocaleString('th-TH')
+            }));
+
+            // สร้าง Workbook และ Worksheet
+            const ws = XLSX.utils.json_to_sheet(formattedData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Chemical Storage Survey");
+
+            // สร้างชื่อไฟล์พร้อมวันที่
+            const dateStr = new Date().toISOString().split('T')[0];
+            const fileName = `Chemical_Storage_Survey_${dateStr}.xlsx`;
+
+            // สั่งโหลดไฟล์
+            XLSX.writeFile(wb, fileName);
+            showToast("Export Excel สำเร็จ!");
         }
 
         function renderCharts() {
