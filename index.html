@@ -94,8 +94,9 @@
             flex-direction: column;
             align-items: center;
             text-decoration: none;
+            padding-top: 5px;
         }
-        .nav-item i { font-size: 1.5rem; margin-bottom: 2px; transition: transform 0.2s; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 2px; transition: transform 0.2s; }
         .nav-item span { font-size: 0.7rem; font-weight: 500; }
         
         .nav-item.active { color: var(--primary-color); }
@@ -133,7 +134,7 @@
     <!-- Loading Overlay -->
     <div id="loading-overlay">
         <div class="spinner-border" style="width: 3rem; height: 3rem; color: var(--primary-color);" role="status"></div>
-        <h5 class="mt-3 fw-light">กำลังโหลดข้อมูล...</h5>
+        <h5 class="mt-3 fw-light">กำลังโหลด...</h5>
     </div>
 
     <!-- Minimal Header -->
@@ -305,6 +306,52 @@
             </div>
         </div>
 
+        <!-- ============================================== -->
+        <!-- VIEW 4: SETTINGS / MASTER DATA                 -->
+        <!-- ============================================== -->
+        <div id="view-settings" class="view-section d-none">
+            <div class="mx-auto" style="max-width: 600px; margin-top: 10px;">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex justify-content-center align-items-center rounded-circle mb-3" style="width: 60px; height: 60px; background-color: rgba(139, 92, 246, 0.1);">
+                        <i class="bi bi-gear-fill fs-2" style="color: #8b5cf6;"></i>
+                    </div>
+                    <h4 class="fw-bold">จัดการ Master Data</h4>
+                    <p class="text-muted small">เพิ่ม/ลบ ข้อมูลโรงงานและไลน์การผลิต</p>
+                </div>
+
+                <!-- Factory Management -->
+                <div class="minimal-card p-3 p-md-4 mb-4 border-top border-4" style="border-top-color: var(--primary-color) !important;">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-building me-2"></i>จัดการโรงงาน (Factory)</h6>
+                    <ul class="list-group list-group-flush mb-3" id="settings-factory-list">
+                        <!-- Populated via JS -->
+                    </ul>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control" id="new-factory-name" placeholder="ชื่อ Factory ใหม่ (เช่น Factory5)">
+                        <button class="btn btn-primary-custom py-2 px-3 rounded-3" style="min-width: 80px;" onclick="addFactory()">เพิ่ม</button>
+                    </div>
+                </div>
+
+                <!-- Line Management -->
+                <div class="minimal-card p-3 p-md-4 border-top border-4" style="border-top-color: #3b82f6 !important;">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-diagram-3 me-2"></i>จัดการไลน์ (Line)</h6>
+                    <select class="form-select mb-3" id="settings-factory-select" onchange="renderSettingsLines()">
+                        <!-- Populated via JS -->
+                    </select>
+                    <ul class="list-group list-group-flush mb-3" id="settings-line-list">
+                        <!-- Populated via JS -->
+                    </ul>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control" id="new-line-name" placeholder="ชื่อ Line ใหม่">
+                        <button class="btn btn-primary-custom py-2 px-3 rounded-3" style="background-color: #3b82f6; min-width: 80px;" onclick="addLine()">เพิ่ม</button>
+                    </div>
+                </div>
+                
+                <div class="text-center text-muted small mt-4 mb-2">
+                    <i class="bi bi-cloud-check me-1"></i> ซิงค์ข้อมูลกับฐานข้อมูลอัตโนมัติเมื่อมีการเปลี่ยนแปลง
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Bottom Navigation Bar -->
@@ -320,6 +367,10 @@
         <div class="nav-item" id="nav-dashboard" onclick="switchView('dashboard')">
             <i class="bi bi-pie-chart-fill"></i>
             <span>สถิติ</span>
+        </div>
+        <div class="nav-item" id="nav-settings" onclick="switchView('settings')">
+            <i class="bi bi-gear-fill"></i>
+            <span>ตั้งค่า</span>
         </div>
     </div>
 
@@ -344,9 +395,9 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoeWptZnBqemFkb2FmdGNxYWtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0OTM3OTksImV4cCI6MjA5NzA2OTc5OX0.NEXqnCUkYOwMwAY4opsRT1GumXkXq5FvWYEH5hoZrBE";
 
         // ==========================================
-        // 2. MASTER DATA
+        // 2. MASTER DATA (Default fallback)
         // ==========================================
-        const masterData = {
+        const defaultMasterData = {
             "Factory1": ["Assy 1", "W/D 1", "M/C 1", "Press 1", "Core 1", "All Factory 1", "WH1"],
             "Factory2": ["Assy 2", "W/D 2", "M/C 2", "Press 2", "Core 2", "All Factory 2", "WH2", "อาคารสารเคมี"],
             "Factory3": ["Assy Scroll 3", "M/C SC 1", "M/C SC 2", "M/C SC 3", "Press 3", "W/D 3", "Core 3", "All Factory 3", "R&D"],
@@ -358,6 +409,7 @@
         // ==========================================
         let supabaseClient;
         let globalData = [];
+        let masterData = JSON.parse(JSON.stringify(defaultMasterData)); // Clone default
         let barChartInstance = null;
         let pieChartInstance = null;
         let isEditing = false;
@@ -367,7 +419,9 @@
             initSystem();
         });
 
-        function initSystem() {
+        async function initSystem() {
+            showLoading(true);
+
             // Init Theme
             const themeToggleBtn = document.getElementById('theme-toggle');
             const themeIcon = document.getElementById('theme-icon');
@@ -379,12 +433,9 @@
                 htmlTag.setAttribute('data-bs-theme', newTheme);
                 themeIcon.className = newTheme === 'dark' ? 'bi bi-moon-stars-fill' : 'bi bi-brightness-high-fill';
                 
-                // Set chart font colors dynamically
                 Chart.defaults.color = newTheme === 'dark' ? '#f3f4f6' : '#1f2937';
                 if(currentView === 'dashboard') renderCharts(); 
             });
-
-            populateFactoryDropdowns();
 
             // Event Listeners
             document.getElementById('input-factory').addEventListener('change', handleFactoryChange);
@@ -393,11 +444,16 @@
             document.getElementById('filter-factory').addEventListener('change', renderTable);
             document.getElementById('search-box').addEventListener('input', renderTable);
 
-            // Init Supabase
+            // Init Supabase and fetch Master Data
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                fetchData();
+                await fetchMasterData(); // Fetch dynamic master data
+                await fetchData();       // Fetch survey records
+            } else {
+                populateFactoryDropdowns();
             }
+
+            showLoading(false);
         }
 
         // ==========================================
@@ -410,11 +466,13 @@
             document.getElementById('view-form').classList.add('d-none');
             document.getElementById('view-table').classList.add('d-none');
             document.getElementById('view-dashboard').classList.add('d-none');
+            document.getElementById('view-settings').classList.add('d-none');
             
             // Remove active class from navs
             document.getElementById('nav-form').classList.remove('active');
             document.getElementById('nav-table').classList.remove('active');
             document.getElementById('nav-dashboard').classList.remove('active');
+            document.getElementById('nav-settings').classList.remove('active');
 
             // Show selected view & set active
             document.getElementById(`view-${viewName}`).classList.remove('d-none');
@@ -423,7 +481,9 @@
             // Specific actions on view change
             window.scrollTo(0, 0);
             if(viewName === 'dashboard') {
-                renderCharts(); // Re-render to fix sizing issues when hidden
+                renderCharts(); 
+            } else if (viewName === 'settings') {
+                renderSettingsFactories();
             }
         }
 
@@ -433,10 +493,25 @@
         function populateFactoryDropdowns() {
             const inputFactory = document.getElementById('input-factory');
             const filterFactory = document.getElementById('filter-factory');
+            
+            // Save current selection to restore if possible
+            const curInput = inputFactory.value;
+            const curFilter = filterFactory.value;
+
+            inputFactory.innerHTML = '<option value="">-- เลือก Factory --</option>';
+            filterFactory.innerHTML = '<option value="ALL">ทุก Factory</option>';
+            
             Object.keys(masterData).forEach(factory => {
                 inputFactory.add(new Option(factory, factory));
                 filterFactory.add(new Option(factory, factory));
             });
+
+            // Restore selection
+            if(masterData[curInput]) inputFactory.value = curInput;
+            if(masterData[curFilter] || curFilter === 'ALL') filterFactory.value = curFilter;
+
+            // Trigger line update
+            inputFactory.dispatchEvent(new Event('change'));
         }
 
         function handleFactoryChange(e) {
@@ -488,8 +563,48 @@
         }
 
         // ==========================================
-        // SUPABASE CRUD
+        // SUPABASE CRUD (SURVEY & MASTER DATA)
         // ==========================================
+
+        // --- MASTER DATA SYNC ---
+        async function fetchMasterData() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('chemical_settings')
+                    .select('*')
+                    .eq('id', 'master_data')
+                    .single();
+                
+                if (data && data.data) {
+                    masterData = data.data; // Overwrite with DB data
+                }
+            } catch (error) {
+                console.warn("Using default Master Data. 'chemical_settings' table might not exist yet.");
+            }
+            populateFactoryDropdowns();
+        }
+
+        async function syncMasterDataToDB() {
+            if(!supabaseClient) return;
+            showLoading(true);
+            try {
+                const { error } = await supabaseClient
+                    .from('chemical_settings')
+                    .upsert({ id: 'master_data', data: masterData });
+                
+                if (error) throw error;
+                showToast("อัปเดต Master Data สำเร็จ!");
+                populateFactoryDropdowns();
+                renderSettingsFactories();
+            } catch (error) {
+                showToast("ไม่สามารถซิงค์ตั้งค่าได้: กรุณาสร้างตาราง chemical_settings ก่อน", "danger");
+                console.error(error);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // --- SURVEY DATA SYNC ---
         async function fetchData() {
             if(!supabaseClient) return;
             try {
@@ -580,6 +695,117 @@
         }
 
         // ==========================================
+        // SETTINGS (MASTER DATA) MANAGER
+        // ==========================================
+        function renderSettingsFactories() {
+            const list = document.getElementById('settings-factory-list');
+            const select = document.getElementById('settings-factory-select');
+            const prevSelectedFactory = select.value;
+            
+            list.innerHTML = '';
+            select.innerHTML = '<option value="">-- เลือก Factory --</option>';
+
+            Object.keys(masterData).forEach(factory => {
+                // Populate Factory List
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-secondary border-opacity-10';
+                li.innerHTML = `
+                    <span class="fw-semibold">${factory} <span class="badge bg-secondary ms-2 rounded-pill">${masterData[factory].length} Lines</span></span>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 30px; height: 30px; padding: 0;" onclick="deleteFactory('${factory}')" title="ลบ Factory">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                list.appendChild(li);
+
+                // Populate Dropdown for Line Manager
+                select.add(new Option(factory, factory));
+            });
+
+            // Restore selection if still exists
+            if (masterData[prevSelectedFactory]) {
+                select.value = prevSelectedFactory;
+            }
+            renderSettingsLines();
+        }
+
+        function renderSettingsLines() {
+            const list = document.getElementById('settings-line-list');
+            const factory = document.getElementById('settings-factory-select').value;
+            
+            list.innerHTML = '';
+            
+            if (!factory || !masterData[factory]) {
+                list.innerHTML = '<li class="list-group-item text-muted text-center bg-transparent border-0 small py-3">กรุณาเลือก Factory ด้านบนก่อน</li>';
+                return;
+            }
+
+            if (masterData[factory].length === 0) {
+                list.innerHTML = '<li class="list-group-item text-muted text-center bg-transparent border-0 small py-3">ไม่มีข้อมูล Line ใน Factory นี้</li>';
+                return;
+            }
+
+            masterData[factory].forEach(line => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-secondary border-opacity-10';
+                li.innerHTML = `
+                    <span>${line}</span>
+                    <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 30px; height: 30px; padding: 0;" onclick="deleteLine('${factory}', '${line}')" title="ลบ Line">
+                        <i class="bi bi-x-lg" style="font-size: 0.8rem;"></i>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function addFactory() {
+            const input = document.getElementById('new-factory-name');
+            const name = input.value.trim();
+            if(!name) return;
+            if(masterData[name]) {
+                showToast("มี Factory นี้อยู่แล้ว", "danger");
+                return;
+            }
+            
+            masterData[name] = []; // Create empty array for lines
+            input.value = '';
+            await syncMasterDataToDB();
+        }
+
+        async function deleteFactory(name) {
+            if(confirm(`ยืนยันการลบ Factory "${name}"? \n(Line ทั้งหมดใน Factory นี้จะถูกลบไปด้วย)`)) {
+                delete masterData[name];
+                await syncMasterDataToDB();
+            }
+        }
+
+        async function addLine() {
+            const factory = document.getElementById('settings-factory-select').value;
+            const input = document.getElementById('new-line-name');
+            const name = input.value.trim();
+            
+            if(!factory) {
+                showToast("กรุณาเลือก Factory ก่อนเพิ่ม Line", "danger");
+                return;
+            }
+            if(!name) return;
+            if(masterData[factory].includes(name)) {
+                showToast("มี Line นี้อยู่แล้ว", "danger");
+                return;
+            }
+            
+            masterData[factory].push(name);
+            input.value = '';
+            await syncMasterDataToDB();
+        }
+
+        async function deleteLine(factory, line) {
+            if(confirm(`ยืนยันการลบ Line "${line}"?`)) {
+                masterData[factory] = masterData[factory].filter(l => l !== line);
+                await syncMasterDataToDB();
+            }
+        }
+
+        // ==========================================
         // DATA RENDERING & EXPORT
         // ==========================================
         function updateDashboardSummary() {
@@ -632,7 +858,6 @@
                 return;
             }
 
-            // นำเงื่อนไข Filter และ Search มาใช้เพื่อให้ Export เฉพาะข้อมูลที่กำลังแสดงอยู่
             const filterFact = document.getElementById('filter-factory').value;
             const searchText = document.getElementById('search-box').value.toLowerCase();
 
@@ -650,7 +875,6 @@
                 return;
             }
 
-            // จัดรูปแบบข้อมูลสำหรับ Excel
             const formattedData = exportData.map(item => ({
                 "โรงงาน (Factory)": item.factory,
                 "ไลน์ (Line)": item.line_name,
@@ -659,16 +883,13 @@
                 "วันที่บันทึก": new Date(item.created_at).toLocaleString('th-TH')
             }));
 
-            // สร้าง Workbook และ Worksheet
             const ws = XLSX.utils.json_to_sheet(formattedData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Chemical Storage Survey");
 
-            // สร้างชื่อไฟล์พร้อมวันที่
             const dateStr = new Date().toISOString().split('T')[0];
             const fileName = `Chemical_Storage_Survey_${dateStr}.xlsx`;
 
-            // สั่งโหลดไฟล์
             XLSX.writeFile(wb, fileName);
             showToast("Export Excel สำเร็จ!");
         }
@@ -688,10 +909,8 @@
             const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
             Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-            // Modern color palette
-            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
-            // Bar Chart
             if (barChartInstance) barChartInstance.destroy();
             barChartInstance = new Chart(document.getElementById('barChart').getContext('2d'), {
                 type: 'bar',
@@ -699,7 +918,7 @@
                     labels: labels,
                     datasets: [{
                         data: dataValues,
-                        backgroundColor: colors.map(c => c + 'CC'), // 80% opacity
+                        backgroundColor: colors.map(c => c + 'CC'),
                         borderRadius: 6,
                         borderSkipped: false
                     }]
@@ -714,7 +933,6 @@
                 }
             });
 
-            // Pie Chart
             if (pieChartInstance) pieChartInstance.destroy();
             pieChartInstance = new Chart(document.getElementById('pieChart').getContext('2d'), {
                 type: 'doughnut',
